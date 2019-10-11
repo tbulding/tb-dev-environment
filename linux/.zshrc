@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:/usr/local/ssl/bin:$PATH
 
 # Path to your oh-my-zsh installation.
   export ZSH="/home/tbulding/.oh-my-zsh"
@@ -8,9 +8,66 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-#ZSH_THEME="agnoster"
-POWERLEVEL9K_MODE='awesome-fontconfig'
 ZSH_THEME="powerlevel9k/powerlevel9k"
+DEFAULT_USER="tbulding"
+# powerlevel9k configuration
+POWERLEVEL9K_MODE='nerdfont-complete'
+
+prompt_tbulding() {
+    local content='\uF17C tbulding'
+    $1_prompt_segment "$0" "$2" "black" "white" "$content" "#"
+}
+
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+POWERLEVEL9K_PROMPT_ADD_NEWLINE=false
+POWERLEVEL9K_RPROMPT_ON_NEWLINE=true
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
+POWERLEVEL9K_SHORTEN_STRATEGY="truncate_beginning"
+POWERLEVEL9K_RVM_BACKGROUND="black"
+POWERLEVEL9K_RVM_FOREGROUND="249"
+POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
+POWERLEVEL9K_TIME_BACKGROUND="black"
+POWERLEVEL9K_TIME_FOREGROUND="white"
+POWERLEVEL9K_TIME_FORMAT="\UF43A %D{%I:%M  \UF133  %m.%d.%y}"
+POWERLEVEL9K_RVM_BACKGROUND="black"
+POWERLEVEL9K_RVM_FOREGROUND="249"
+POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
+POWERLEVEL9K_STATUS_VERBOSE=false
+POWERLEVEL9K_VCS_CLEAN_FOREGROUND='black'
+POWERLEVEL9K_VCS_CLEAN_BACKGROUND='green'
+POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='black'
+POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='orange'
+POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='black'
+POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='yellow'
+POWERLEVEL9K_VCS_HIDE_TAGS='false'
+POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='black'
+POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='white'
+POWERLEVEL9K_FOLDER_ICON=''
+POWERLEVEL9K_STATUS_OK_IN_NON_VERBOSE=true
+POWERLEVEL9K_STATUS_VERBOSE=false
+POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=0
+POWERLEVEL9K_VCS_UNTRACKED_ICON='\u25CF'
+POWERLEVEL9K_VCS_UNSTAGED_ICON='\u00b1'
+POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='\u2193'
+POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='\u2191'
+POWERLEVEL9K_VCS_COMMIT_ICON="\uf417"
+POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%F{blue}\u256D\u2500%f"
+POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\u2570\uf460%f "
+POWERLEVEL9K_CUSTOM_BATTERY_STATUS="prompt_zsh_battery_level"
+POWERLEVEL9K_CUSTOM_BATTERY_STATUS_BACKGROUND='blue'
+POWERLEVEL9K_CUSTOM_BATTERY_STATUS_BACKGROUND='black'
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(tbulding context custom_internet_signal  ssh root_indicator dir dir_writable vcs)
+#POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon context custom_internet_signal  ssh root_indicator dir dir_writable vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time  status  time)
+HIST_STAMPS="dd/mm/yyyy"
+DISABLE_UPDATE_PROMPT=true
+POWERLEVEL9K_CONTEXT_DEFAULT_BACKGROUND='black'
+POWERLEVEL9K_CONTEXT_DEFAULT_FOREGROUND='purple'
+
+POWERLINE9K_CODETALK_DEFAULT_BACKGROUND='black'
+POWERLINE9K_CODETALK_DEFAULT_FOREGROUND='red'
+# End powerlevel9k configuration
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
@@ -63,7 +120,7 @@ ZSH_THEME="powerlevel9k/powerlevel9k"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git aws)
+plugins=(git aws vscode ssh-agent)
 
 source ~/.fonts/*.sh
 source $ZSH/oh-my-zsh.sh
@@ -94,14 +151,21 @@ export PATH="$PATH:/home/tbulding/.local/bin"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-POWERLEVEL9K_MODE="nerdfont-complete"
-POWERLEVEL9K_DISABLE_RPROMPT=true
-POWERLEVEL9K_PROMPT_ON_NEWLINE=false
+
 alias pip='pip3'
 alias python='python3'
 alias lsla='ls -la'
-alias qs='cd /c/dev/repos/quickstarts'
+alias qs='cd /c/dev/repos/qs'
 alias clr='clear'
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir virtualenv  vcs)
-POWERLEVEL9K_VIRTUALENV_BACKGROUND='cyan'
+VSCODE=code-insiders
+## set colors for LS_COLORS
+eval `dircolors ~/.dircolors`
+export PATH="/home/tbulding/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+export PATH=$HOME/bin:$PATH
+export REQUESTS_CA_BUNDLE="/etc/ssl/certs/ca-bundle.crt"
+export PATH=$HOME/.toolbox/bin:$PATH
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+#[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
