@@ -16,7 +16,7 @@ $wc.DownloadFile($url, $output)
 Add-AppxPackage C:\temp\Ubuntu.appx
 # Basic Configuration
 # WSL Config
-& "ubuntu1804 config --default-user tbulding"
+& ubuntu1804 config --default-user tbulding
 $wslpath = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath }) | Select-Object DistributionName, BasePath
 Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$wslpath\rootfs\etc"
 #endregion
@@ -27,7 +27,7 @@ Invoke-WebRequest -Uri https://github.com/ryanoasis/nerd-fonts/raw/master/patche
 $sa = new-object -comobject shell.application
 $fontName = 'DejaVu Sans Mono Nerd Font Complete.ttf'
 If ((Test-Path "c:\windows\fonts\$($fontName)") -eq $False) {
-    Write-Output "Font is already installed"
+    Write-Output "The font $fontName is already installed - Skipping"
 }
 else {
     $Fonts = $sa.NameSpace(0x14)
