@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
-
 # Generally this script will install basic Ubuntu packages and extras,
 # latest Python pip and defined dependencies in pip-requirements.
 # Docker, Sublime Text and VSCode, Slack, Megasync, Mendeley, Latex support and etc
 # Some configs reused from: https://github.com/nnja/new-computer and,
 # https://github.com/JackHack96/dell-xps-9570-ubuntu-respin
-
 set -e pipefail
 #  increase the number of open files allowed
 ulimit -n 65535 || true
