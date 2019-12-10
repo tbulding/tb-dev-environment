@@ -17,16 +17,14 @@ Add-AppxPackage C:\temp\Ubuntu.appx
 # Basic Configuration
 # WSL Config
 & ubuntu1804 config --default-user tbulding
-$wslpath = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath }) | Select-Object DistributionName, BasePath
-Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$($wslpath.BasePath)\rootfs\etc"
-New-Item -Path "$($wslpath.BasePath)\rootfs\" -Name "c" -ItemType "directory"
+# $wslpath = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath }) | Select-Object DistributionName, BasePath
+# Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$($wslpath.BasePath)\rootfs\etc"
+# New-Item -Path "$($wslpath.BasePath)\rootfs\" -Name "c" -ItemType "directory"
 #endregion
 
 #region Windows Config
 #Font
 $fontName = 'DejaVu Sans Mono Nerd Font Complete.ttf'
-$fontWebName = $fontName.Replace(" ", "%20")
-$fontWebName
 If ((Test-Path "c:\windows\fonts\$($fontName)") -eq $False) {
     Write-Output "The font $fontName is already installed - Skipping"
 }
