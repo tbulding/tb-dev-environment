@@ -24,6 +24,6 @@ git clone 'https://github.com/tbulding/tb-dev-environment.git' $destinationPath
 #endregion
 
 #region Setup Environment
-& "$destinationPath/powershell/setup-environment.ps1 -sourcepath $destinationPath"
+& "$destinationPath/powershell/setup-environment.ps1" -sourcepath $destinationPath
 #endregion
 

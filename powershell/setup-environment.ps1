@@ -16,6 +16,7 @@ $wc.DownloadFile($url, $output)
 Add-AppxPackage C:\temp\Ubuntu.appx
 # Basic Configuration
 # WSL Config
+& "ubuntu1804 config --default-user tbulding"
 $wslpath = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath }) | Select-Object DistributionName, BasePath
 Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$wslpath\rootfs\etc"
 #endregion
