@@ -18,7 +18,7 @@ Add-AppxPackage C:\temp\Ubuntu.appx
 # WSL Config
 & ubuntu1804 config --default-user tbulding
 $wslpath = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath }) | Select-Object DistributionName, BasePath
-Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$wslpath\rootfs\etc"
+Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$($wslpath.BasePath)\rootfs\etc"
 #endregion
 
 #region Windows Config
