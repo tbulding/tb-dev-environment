@@ -2,7 +2,7 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 #region Package Providers
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 #endregion
 
 #region Initial tools
@@ -20,6 +20,7 @@ Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Co
 
 #region environment repo
 $destinationPath = 'c:\temp\dev-environment'
+Remove-Item  -Path $destinationPath -Force -Confirm:$false  -Recurse
 git clone 'https://github.com/tbulding/tb-dev-environment.git' $destinationPath
 #endregion
 
