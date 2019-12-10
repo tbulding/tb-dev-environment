@@ -212,7 +212,7 @@ PythonInstaller() {
     sudo pip install virtualenv virtualenvwrapper ipython
     if ! command -v ipython >/dev/null; then
         ipython profile create
-    fi
+    ficd
     export WORKON_HOME="${HOME}/.venvs"
     export VIRTUALENVWRAPPER_PYTHON="$(which python)"
     export VIRTUALENVWRAPPER_VIRTUALENV="$(which virtualenv)"

@@ -47,11 +47,12 @@ echon() {
 
 echon
 cecho "${red}" "###################################################"
-cecho "${red}" "#       [X]Ubuntu Install Setup Script            #"
+cecho "${red}" "#       Ubuntu Install Setup Script              #"
 cecho "${red}" "#                                                 #"
 cecho "${red}" "#  Note: You need to be sudo before you continue  #"
 cecho "${red}" "#                                                 #"
 cecho "${red}" "#               By Mpho Mphego                    #"
+cecho "${red}" "#          Customized by Tony Bulding             #"
 cecho "${red}" "#                                                 #"
 cecho "${red}" "#           DO NOT RUN THIS SCRIPT BLINDLY        #"
 cecho "${red}" "#              YOU'LL PROBABLY REGRET IT...       #"
@@ -61,26 +62,10 @@ cecho "${red}" "#         AND EDIT TO SUIT YOUR NEEDS             #"
 cecho "${red}" "###################################################"
 echon
 
-# Set continue to false by default.
-export CONTINUE=false
-
-if [[ -z "${TRAVIS}" ]]; then
-    cecho "${red}" "Have you read through the script you're about to run and ";
-    cechon "${red}" "understood that it will make changes to your computer? (y/n): ";
-    read -r response
-    if [[ "${response}" = "yes" ]]; then
-        export CONTINUE=true
-        cecho "${blue}" "Please enter some info so that the script can automate the boring stuff."
-        read -r -p 'Enter your full name: ' USERNAME
-        read -r -p 'Enter your email address: ' USEREMAIL
-    else
-        cecho "${red}" "Please go read the script, it only takes a few minutes"
-        exit 1
-    fi
-else
-    cecho "${yellow}" "Running Continuous Integration.";
-    export CONTINUE=true
-fi
+export CONTINUE=true
+cecho "${blue}" "Please enter some info so that the script can automate the boring stuff."
+read -r -p 'Enter your full name: ' USERNAME
+read -r -p 'Enter your email address: ' USEREMAIL
 
 # Here we go.. ask for the administrator password upfront and run a
 # keep-alive to update existing `sudo` time stamp until script has finished
@@ -134,13 +119,14 @@ InstallThisQuietly() {
 ReposInstaller() {
 
     cecho "${green}" "Running package updates..."
+    sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com `sudo aptitude update 2>&1 | grep -o ‘[0-9A-Z]\{16\}$’ | xargs`
     sudo apt-get update -qq || true;
     sudo dpkg --configure -a || true;
     sudo -k sed -i -r 's"enabled=1"enabled=0"' /etc/default/apport
     if ! command -v wget >/dev/null; then
         InstallThisQuietly wget
     fi
-
+    
     if ! command -v curl > /dev/null; then
         InstallThisQuietly curl
     fi
@@ -152,43 +138,50 @@ ReposInstaller() {
     cecho "${green}" "Adding APT Repositories."
     Version=$(lsb_release -cs)
 
+    ## Amazon
+    cecho "${green}" "Adding Amazon Repositories"
+    crp=$(curl http://cascadia.corp.amazon.com/localproxy)
+    sudo echo "deb http://${crp}/amazon bionic-amazon main" > /etc/apt/sources.list.d/amazon-bionic.list
+    sudo echo "deb http://${crp}/amazon bionic-thirdparty-partner partner" >>/etc/apt/sources.list.d/amazon-bionic.list
+    wget -qO - http://${crp}/amazon/clienteng.gpg | sudo apt-key add -
+    sudo apt update
+
     ## Git
     sudo add-apt-repository -yn ppa:git-core/ppa || true
-
-    ## Docker
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - || true
-    [ -z "${Version}" ] || sudo add-apt-repository -yn "deb [arch=amd64] https://download.docker.com/linux/ubuntu ${Version} stable"
-
-    ## VSCode
-    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg || true;
-    sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/ || true
-    sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list' || true;    
-    cecho "${cyan}" "################### Done Adding Repositories ###################"
 }
 
 ## Install few global Python packages
 PythonInstaller() {
     cecho "${cyan}" "Installing global Python packages..."
-    if [ ! -f "pip-requirements.txt" ]; then
-        wget https://raw.githubusercontent.com/mmphego/new-computer/master/pip-requirements.txt
-    fi
-    InstallThis python-dev python3.7-dev python3.7 python-serial
-    curl https://bootstrap.pypa.io/get-pip.py | sudo python
-    sudo pip install virtualenv virtualenvwrapper ipython
-    if ! command -v ipython >/dev/null; then
-        ipython profile create
-    fi
-    export WORKON_HOME="${HOME}/.venvs"
-    export VIRTUALENVWRAPPER_PYTHON="$(which python)"
-    export VIRTUALENVWRAPPER_VIRTUALENV="$(which virtualenv)"
-    export VIRTUALENVWRAPPER_VIRTUALENV_ARGS="--no-site-packages"
+    curl https://bootstrap.pypa.io/get-pip.py | sudo python3
+    sudo pip install taskcat --user
+    sudo pip install --user powersline-status
+    sudo pip install dircolors
+}
 
-    # shellcheck source=/dev/null
-    source "$(which virtualenvwrapper.sh)"
-    mkvirtualenv -p python2.7 venv2 -r pip-requirements.txt || true
-    mkvirtualenv -p python3.6 venv3.6 -r pip-requirements.txt || true
-    mkvirtualenv -p python3.7 venv3.7 -r pip-requirements.txt || true
-    rm -rf pip-requirements.txt
+AWSInstaller(){
+    cecho "${cyan}" "Installing AWS CLI..."
+    curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+}
+
+ZSHInstaller(){
+    cecho "${cyan}" "Installing ZSH..."
+    rm -r -f ~/.oh-my-zsh
+    InstallThisQuietly zsh curl fontconfig powerline fonts-powerline
+    wget https://github.com/powerline/powerline/raw/develop/font/PowerlineSymbols.otf
+    wget https://github.com/powerline/powerline/raw/develop/font/10-powerline-symbols.conf
+    mkdir -p  ~/.local/share/fonts/
+    mkdir -p ~/.config/fontconfig/conf.d/
+    mv PowerlineSymbols.otf ~/.local/share/fonts/
+    fc-cache -vf ~/.local/share/fonts/
+    mv 10-powerline-symbols.conf ~/.config/fontconfig/conf.d/
+    git clone https://github.com/powerline/fonts.git --depth=1
+    
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+
 }
 
 GitInstaller() {
@@ -209,24 +202,6 @@ GitInstaller() {
 ####################################################################################################
 ########################################## Package Set Up ##########################################
 ####################################################################################################
-DockerSetUp() {
-    cecho "${cyan}" "Setting up Docker..."
-    sudo gpasswd -a  "$(users)" docker
-    sudo usermod -a -G docker "$(users)"
-}
-
-VSCodeSetUp() {
-    cecho "${cyan}" "Installing VSCode plugins..."
-    if [ ! -f "code_plugins.txt" ]; then
-        wget https://raw.githubusercontent.com/mmphego/new-computer/master/code_plugins.txt
-    fi
-    # alt
-    # cat code_plugins.txt | xargs -L1 code --install-extension
-    while read -r pkg; do
-        retry_cmd 5 code --install-extension "${pkg}" --force || true
-    done < code_plugins.txt
-    rm -rf code_plugins.txt
-}
 
 RepoKeys(){
     Recv_GPG_Keys 379CE192D401AB61 || true
@@ -235,12 +210,11 @@ RepoKeys(){
 
 GitSetUp() {
 
-    if [[ -z "${TRAVIS}" ]]; then
         #############################################
         ### Generate ssh keys & add to ssh-agent
         ### See: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
         #############################################
-
+        mkdir -p .ssh
         cecho "${cyan}" "Setting up Git..."
         cecho "${green}"  "Generating SSH keys, adding to ssh-agent..."
         git config --global user.name "${USERNAME}"
@@ -338,7 +312,6 @@ GitSetUp() {
             sudo ~/Documents/git-hooks-master/setup_hooks.sh install_hooks
         fi
         echo
-    fi
 }
 
 installDotfiles() {
@@ -362,39 +335,22 @@ installDotfiles() {
     fi
 }
 
-MiscConfigs() {
-    # add your user to the dialout group so it can access the tty device for the serial connection
-    sudo adduser $USER dialout
-}
 Cleanup() {
     echon
     cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
     echon
 
     sudo apt clean && rm -rf -- *.deb* *.gpg* *.py*
-    if [[ -z "${TRAVIS}" ]]; then
-        cechon "${red}" "Check for and install available Debian updates, install, and automatically restart? (y/n)?: "
-        read -r response
-        if [ "$response" != "${response#[Yy]}" ] ;then
-            sudo apt-get -y --allow-unauthenticated upgrade && \
-            sudo apt-get clean && sudo apt-get autoclean && \
-            sudo apt-get autoremove
-        fi
-        if [ "$(lsb_release -c -s)" == "bionic" ] && [[ "$(uname -r)" > "4.15" ]]; then
-            cecho "${green}" "Upgrading Ubuntu 18.04 to Ubuntu 18.04.2 with new kernel version"
-            sudo apt-get install -y --install-recommends linux-generic-hwe-18.04 xserver-xorg-hwe-18.04
-        fi
+    sudo apt-get -y --allow-unauthenticated upgrade && \
+    sudo apt-get clean && sudo apt-get autoclean && \
+    sudo apt-get autoremove
+    if [ "$(lsb_release -c -s)" == "bionic" ] && [[ "$(uname -r)" > "4.15" ]]; then
+        cecho "${green}" "Upgrading Ubuntu 18.04 to Ubuntu 18.04.2 with new kernel version"
+        sudo apt-get install -y --install-recommends linux-generic-hwe-18.04 xserver-xorg-hwe-18.04
     fi
+
     cecho "${cyan}" "########################## Done Cleanup #####################################"
     echon
-    if [[ -z "${TRAVIS}" ]]; then
-        cecho "${red}" "Note that some of these changes require a logout/restart to take effect."
-        cechon "${cyan}" "Please Reboot system! (y/n): "
-        read -r response
-        if [[ "${response}" = "yes" ]]; then
-            sudo shutdown -r now
-        fi
-    fi
 }
 
 ####################################################################################################
@@ -403,136 +359,25 @@ Cleanup() {
 main() {
 
     cecho "${blue}" "################################################################################################"
-    cecho "${blue}" "################################# Compilers and GNU dependencies ###############################"
-    cecho "${blue}" "################################################################################################"
-
-    InstallThis g++ gettext dh-autoreconf autoconf automake clang ruby-dev ruby
-
-    cecho "${blue}" "################################################################################################"
-    cecho "${blue}" "######################################### Library dependencies ##################################"
-    cecho "${blue}" "################################################################################################"
-
-    InstallThis libcurl4-gnutls-dev libexpat1-dev libz-dev libssl-dev \
-        libreadline-dev libyaml-dev zlib1g-dev libsqlite3-dev libxml2-dev \
-        libxslt1-dev libcurl4-openssl-dev libffi-dev libgtk2.0-0 libtool libncurses5-dev \
-        libc6-dev-amd64 libexpat-dev libtool-bin
-
-    cecho "#{blue}" "#################################################################################################"
-    cecho "#{blue}" "################################# System and Security tools #####################################"
-    cecho "#{blue}" "#################################################################################################"
-
-    InstallThis ca-certificates build-essential \
-        software-properties-common apt-transport-https \
-        tlp tlpui pydf balena-etcher-electron stow \
-        autorandr touchpad-indicator \
-        openjdk-8-jre openjdk-8-jdk
-
-    if [[ -z "${TRAVIS}" ]]; then
-        # VM tools
-        InstallThis virtualbox
-    fi
-
-    cecho "${blue}" "################################################################################################"
-    cecho "${blue}" "######################################### Network tools ########################################"
-    cecho "${blue}" "################################################################################################"
-
-    InstallThis autofs \
-                autossh \
-                bash-completion \
-                ethtool \
-                evince \
-                gnome-calculator \
-                gparted \
-                openssh-server \
-                sshfs \
-                tree \
-                wicd \
-                vnstat
-
-    cecho "${blue}" "################################################################################################"
-    cecho "${blue}" "############################################ Fun tools #########################################"
-    cecho "${blue}" "################################################################################################"
-
-    InstallThis cowsay fortune-mod
-
-    cecho "${blue}" "################################################################################################"
     cecho "${blue}" "################################ Productivity tools ############################################"
     cecho "${blue}" "################################################################################################"
 
-    InstallThis axel \
-        bison \
-        bzip2 \
-        chromium-browser \
-        colordiff \
-        coreutils \
-        dict \
-        dictd \
-        dict-wn \
-        docker-ce \
-        file \
-        flex \
-        gawk \
-        gnupg2 \
-        gperf \
-        grep \
-        gzip \
-        htop \
-        inxi \
-        jq \
-        lzip \
-        nodejs \
-        openssh-server \
-        python-gpg \
-        ranger \
-        rar \
-        redshift \
-        redshift-gtk \
-        rsync \
-        sed  \
-        shellcheck \
-        sqlite3 \
-        terminator \
-        vim \
-        xz-utils
-
-    GitInstaller
-    TravisClientInstaller
-    # cat for `Markdown`
-    MDcatInstaller
-    # See http://eradman.com/entrproject/
-    EntrInstaller
-
-    cecho "${blue}" "#################################################################################################"
-    cecho "${blue}" "################################# Additional Package Managers ###################################"
-    cecho "${blue}" "#################################################################################################"
-
-    InstallThis cargo snap
-    RustPackages exa
-
-    cecho "${blue}" "################################################################################################"
-    cecho "${blue}" "####################### Packages for xUbuntu/ Elementary OS  ###################################"
-    cecho "${blue}" "################################################################################################"
-
-    if [[ $(dpkg -l '*buntu-desktop' | grep ^ii | cut -f 3 -d ' ') == *"xubuntu"* ]]; then
-        xUbuntuPackages
-        UbuntuOSDesktop
-    fi
-    ElementaryOSDesktop
+    #GitInstaller
+    ZSHInstaller
 
     cecho "${blue}" "################################################################################################"
     cecho "${blue}" "############################ Python Packages ###################################################"
     cecho "${blue}" "################################################################################################"
 
-    PythonInstaller
+    #PythonInstaller
 
     cecho "${blue}" "################################################################################################"
     cecho "${blue}" "##################################### Setup ####################################################"
     cecho "${blue}" "################################################################################################"
 
-    VSCodeSetUp;
-    DockerSetUp
-    GitSetUp
-    RepoKeys
+    #AWSInstaller    
+    #GitSetUp
+    #RepoKeys
 
     cecho "${cyan}" "#################### Installation Complete ################################"
 }
@@ -540,11 +385,7 @@ main() {
 ########################################
 ########### THE SETUP ##################
 ########################################
-ReposInstaller
+#ReposInstaller
 main
-installDotfiles
-MiscConfigs
-if [[ $(sudo lshw | grep product | head -1) == *"XPS 15"* ]]; then
-    DELL_XPS_TWEAKS
-fi
-Cleanup
+#installDotfiles
+#Cleanup
