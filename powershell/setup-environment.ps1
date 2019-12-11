@@ -11,9 +11,9 @@ $output = 'c:\temp\cmder.zip'
 $wc = New-Object System.Net.WebClient
 $wc.DownloadFile($url, $output)
 # Extract the archive
-Expand-Archive -LiteralPath $output -DestinationPath 'c:\tools\'
+Expand-Archive -LiteralPath $output -DestinationPath 'c:\tools\cmder' -Force
 # Copy the config file
-Copy-Item "$sourcepath\cmder\ConEmu.xml" -Destination "C:\tools\Cmder\vendor\conemu-maximus5"
+Copy-Item "$sourcepath\cmder\ConEmu.xml" -Destination "C:\tools\cmder\vendor\conemu-maximus5"
 #endregion
 
 
