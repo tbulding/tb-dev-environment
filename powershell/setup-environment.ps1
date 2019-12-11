@@ -38,7 +38,7 @@ Add-AppxPackage C:\temp\Ubuntu.appx
 #region Windows Config
 #Font
 $fontName = 'DejaVu Sans Mono Nerd Font Complete.ttf'
-If ((Test-Path "c:\windows\fonts\$($fontName)") -eq $False) {
+If (((Test-Path "c:\windows\fonts\$($fontName)") -eq $True) -or ((Test-Path "$($env:LOCALAPPDATA)\Microsoft\windows\fonts\$($fontName)") -eq $True)) {
     Write-Output "The font $fontName is already installed - Skipping"
 }
 else {
