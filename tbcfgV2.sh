@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 # Generally this script will install basic Ubuntu packages and extras,
 # latest Python pip and defined dependencies in pip-requirements.
 # Docker, Sublime Text and VSCode, Slack, Megasync, Mendeley, Latex support and etc
