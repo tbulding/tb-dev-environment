@@ -2,14 +2,11 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 #region Package Providers
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 #endregion
 
 #region Initial tools
-choco feature enable -n allowGlobalConfirmation
-choco install git
-choco install cmder
-Install-Module posh-git -F
+Install-Package git -Confirm:$false -Force
+Install-Module posh-git -Force
 #endregion
 
 #region Update PATH

@@ -5,6 +5,19 @@ param (
     $sourcepath
 )
 
+#region *************** Download and Install cmder **************************
+$url = 'https://github.com/cmderdev/cmder/releases/download/v1.3.13/cmder.zip'
+$output = 'c:\temp\cmder.zip'
+$wc = New-Object System.Net.WebClient
+$wc.DownloadFile($url, $output)
+# Extract the archive
+Expand-Archive -LiteralPath $output -DestinationPath 'c:\tools\'
+# Copy the config file
+Copy-Item "$sourcepath\cmder\ConEmu.xml" -Destination "C:\tools\Cmder\vendor\conemu-maximus5"
+#endregion
+
+
+
 #region WSL
 # Enable WSL
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
@@ -36,7 +49,7 @@ else {
 }
 
 # CMDER
-Copy-Item "$sourcepath\cmder\ConEmu.xml" -Destination "C:\tools\Cmder\vendor\conemu-maximus5"
+
 #endregion
 
 
