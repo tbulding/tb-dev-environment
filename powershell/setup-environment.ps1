@@ -6,17 +6,22 @@ param (
 )
 
 #region *************** Download and Install cmder **************************
-$url = 'https://github.com/cmderdev/cmder/releases/download/v1.3.13/cmder.zip'
-$output = 'c:\temp\cmder.zip'
-$wc = New-Object System.Net.WebClient
-$wc.DownloadFile($url, $output)
-# Extract the archive
-Expand-Archive -LiteralPath $output -DestinationPath 'c:\tools\cmder' -Force
-# Copy the config file
-Copy-Item "$sourcepath\cmder\ConEmu.xml" -Destination "C:\tools\cmder\vendor\conemu-maximus5"
+#Check to see if cmder is already installed
+if ((Test-Path 'c:\tools\cmder') -eq $True) {
+    Write-Output 'cmder is already installed -Skipping'
+}
+else {
+    $url = 'https://github.com/cmderdev/cmder/releases/download/v1.3.13/cmder.zip'
+    $output = 'c:\temp\cmder.zip'
+    $wc = New-Object System.Net.WebClient
+    $wc.DownloadFile($url, $output)
+    # Extract the archive
+    Expand-Archive -LiteralPath $output -DestinationPath 'c:\tools\cmder' -Force
+    # Copy the config file
+    Copy-Item "$sourcepath\cmder\ConEmu.xml" -Destination "C:\tools\cmder\vendor\conemu-maximus5"
+ 
+}
 #endregion
-
-
 
 #region WSL
 # Enable WSL
@@ -49,9 +54,8 @@ else {
     $Fonts.CopyHere("c:\temp\$fontName")
 }
 
-# CMDER
-
 #endregion
 
+& wsl sh  /mnt/c/temp/dev-environment/linuxconfig.sh
 
 
