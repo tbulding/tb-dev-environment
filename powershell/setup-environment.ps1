@@ -30,8 +30,9 @@ Add-AppxPackage C:\temp\Ubuntu.appx
 # Basic Configuration
 # WSL Config
 & ubuntu1804 config --default-user tbulding
-# $wslpath = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath }) | Select-Object DistributionName, BasePath
-# Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$($wslpath.BasePath)\rootfs\etc"
+$wslpath = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath }) | Select-Object DistributionName, BasePath
+Start-Sleep -Seconds 30
+Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$($wslpath.BasePath)\rootfs\etc"
 # New-Item -Path "$($wslpath.BasePath)\rootfs\" -Name "c" -ItemType "directory"
 #endregion
 
