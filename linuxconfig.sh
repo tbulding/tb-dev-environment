@@ -323,21 +323,8 @@ installDotfiles() {
     ################################################################################################
     ###################################### Install dotfiles repo ###################################
     ################################################################################################
-    if [[ -z "${TRAVIS}" ]]; then
-        cechon "${red}" "Do you want to clone and install dotfiles? (y/n): "
-        read -r response
-        if [[ "${response}" = "yes" ]]; then
-            wget https://github.com/mmphego/dot-files/archive/master.zip
-            unzip master.zip
-            rsync -uar --delete-after dot-files-master/{.,}* "${HOME}"
-            cd "${HOME}" || true;
-            bash .dotfiles/.dotfiles_setup.sh install
-            cd .. || true;
-            find "${HOME}/.config/" -type f -name '*.xml' -prune | while read -r FILE;
-                do sed -i "s/mmphego/${USER}/g" "${FILE}";
-            done
-        fi
-    fi
+    rsync -var /mnt/c/temp/dev-environment/.dotfiles/ "${HOME}"
+    sudo rsync -var /mnt/c/temp/dev-environment/wsl.conf "/etc"
 }
 
 Cleanup() {
@@ -392,5 +379,5 @@ main() {
 ########################################
 #ReposInstaller
 main
-#installDotfiles
+installDotfiles
 #Cleanup
