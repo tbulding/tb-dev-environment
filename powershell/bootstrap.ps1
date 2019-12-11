@@ -20,7 +20,7 @@ Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Co
 
 #region environment repo
 $destinationPath = 'c:\temp\dev-environment'
-Remove-Item  -Path $destinationPath -Force -Confirm:$false  -Recurse
+Remove-Item  -Path $destinationPath -Force -Confirm:$false  -Recurse -ErrorAction Ignore
 git clone 'https://github.com/tbulding/tb-dev-environment.git' $destinationPath
 #endregion
 
