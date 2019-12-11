@@ -166,21 +166,27 @@ AWSInstaller(){
 }
 
 ZSHInstaller(){
-    cecho "${cyan}" "Installing ZSH..."
+    cecho "${cyan}" "*** Starting ZSHInstaller ***"
     rm -r -f ~/.oh-my-zsh
-    InstallThisQuietly zsh curl fontconfig powerline fonts-powerline
+    cecho "${cyan}" "Installing ZSH..."
+    InstallThisQuietly zsh
+    cecho "${cyan}" "Installing curl..."
+	InstallThisQuietly curl
+    cecho "${cyan}" "Installing fontconfig..."
+	InstallThisQuietly fontconfig
+    cecho "${cyan}" "Installing Powerline Symbols..."
     wget https://github.com/powerline/powerline/raw/develop/font/PowerlineSymbols.otf
     wget https://github.com/powerline/powerline/raw/develop/font/10-powerline-symbols.conf
     mkdir -p  ~/.local/share/fonts/
     mkdir -p ~/.config/fontconfig/conf.d/
     mv PowerlineSymbols.otf ~/.local/share/fonts/
-    fc-cache -vf ~/.local/share/fonts/
+    sudo fc-cache -vf ~/.local/share/fonts/
     mv 10-powerline-symbols.conf ~/.config/fontconfig/conf.d/
-    git clone https://github.com/powerline/fonts.git --depth=1
-    
+    cecho "${cyan}" "Installing oh-my-zsh..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    cecho "${cyan}" "Installing theme powerlevel9k..."
     git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
-
+    cecho "${cyan}" "*** ZSHInstaller Complete ***"
 }
 
 GitInstaller() {

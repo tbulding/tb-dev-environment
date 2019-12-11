@@ -1,0 +1,19 @@
+[filter "lfs"]
+        required = true
+        clean = git-lfs clean -- %f
+        smudge = git-lfs smudge -- %f
+        process = git-lfs filter-process
+[gui]
+        recentrepo = W:/My Documents/dev/QuickStarts/quickstart-microsoft-sfb
+        recentrepo = W:/My Documents/dev/QuickStarts/quickstart-commvault-commcell
+        recentrepo = C:/dev/repos/OSAGitHubUserMapping
+[core]
+        editor = nano
+        autocrlf = false
+        ignorecase = false
+        eol = lf
+[push]
+        default = simple
+[alias]
+        # Clone a repository including all submodules
+	    clone-rec = clone --recursive --progress

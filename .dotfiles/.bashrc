@@ -12,6 +12,28 @@ case $- in
       *) return;;
 esac
 
+####################################################################################################
+############################################# Fancy Prompt #########################################
+####################################################################################################
+__git_status_info() {
+    STATUS=$(git status 2>/dev/null |
+    awk -v r=${RED} -v y=${YELLOW} -v g=${GREEN} -v b=${BLUE} -v n=${NC} '
+    /^On branch / {printf(y$3n)}
+    /^Changes not staged / {printf(g"|?Changes unstaged!"n)}
+    /^Changes to be committed/ {printf(b"|*Uncommitted changes!"n)}
+    /^Your branch is ahead of/ {printf(r"|^Push changes!"n)}
+    ')
+    if [ -n "${STATUS}" ]; then
+        echo -ne " ${STATUS} ${LIGHTCYAN}[Last updated: $(git show -1 --stat | grep ^Date | cut -f4- -d' ')]${NC}"
+    fi
+}
+
+__disk_space=$(/bin/df --output=pcent /home | tail -1)
+_ip_add=$(ip addr | grep -w inet | gawk '{if (NR==2) {$0=$2; gsub(/\//," "); print $1;}}')
+__ps1_startline="\[\033[0;32m\]\[\033[0m\033[0;38m\]\u\[\033[0;36m\]@\[\033[0;36m\]\h on ${_ip_add}:\w\[\033[0;32m\] \[\033[0;34m\] [disk:${__disk_space}] \[\033[0;32m\]"
+__ps1_endline="\[\033[0;32m\]└─\[\033[0m\033[0;31m\] [\D{%F %T}] \$\[\033[0m\033[0;32m\] >>>\[\033[0m\] "
+export PS1="${__ps1_startline}\$(__git_status_info)\n${__ps1_endline}"
+
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
@@ -121,3 +143,22 @@ eval "$(pyenv virtualenv-init -)"
 export PATH="/home/tbulding/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+
+####################################################################################################
+############################################ Welcome Message #######################################
+####################################################################################################
+if [ -f /var/run/reboot-required ]; then
+    echo "${REDBG}[*** Hello ${USER}, you must reboot your machine ***]${NC}\n";
+fi
+
+IP_ADD=`ip addr | grep -w inet | gawk '{if (NR==2) {$0=$2; gsub(/\//," "); print $1;}}'`
+printf "${LIGHTGREEN}Hello, ${USER}@${IP_ADD}\n"
+printf "Today is, $(date)\n";
+printf "\nSysinfo: $(uptime)\n"
+# if [ -f ~/.weather.log ]; then
+#     while IFS='' read -r line || [[ -n "$line" ]]; do
+#         printf "${LIGHTBLUE}%s\n${NC}" "${line}"
+#     done < ~/.weather.log
+# fi
+printf "\n${YELLOW}Get a list of available functions: 'declare -F'\n"
+#printf "${LIGHTCYAN}\n$(fortune | cowsay)${NC}\n"
