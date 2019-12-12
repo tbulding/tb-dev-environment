@@ -4,7 +4,7 @@ param (
     [string]
     $sourcepath
 )
-
+$toolsPath = 'C:\tools'
 #region *************** Download and Install cmder **************************
 #Check to see if cmder is already installed
 if ((Test-Path 'c:\tools\cmder') -eq $True) {
@@ -12,14 +12,20 @@ if ((Test-Path 'c:\tools\cmder') -eq $True) {
 }
 else {
     $url = 'https://github.com/cmderdev/cmder/releases/download/v1.3.13/cmder_mini.zip'
-    $output = 'c:\temp\cmder.zip'
+    $output = "$sourcePath\cmder.zip"
     $wc = New-Object System.Net.WebClient
     $wc.DownloadFile($url, $output)
     # Extract the archive
-    Expand-Archive -LiteralPath $output -DestinationPath 'c:\tools\cmder' -Force
+    Expand-Archive -LiteralPath $output -DestinationPath "$toolsPath\cmder" -Force
     # Copy the config file
-    Copy-Item "$sourcepath\cmder\ConEmu.xml" -Destination "C:\tools\cmder\vendor\conemu-maximus5"
- 
+    Copy-Item "$sourcepath\cmder\ConEmu.xml" -Destination "$([Environment]::GetFolderPath("MyDocuments"))\cmder" -Force
+    $shell = New-Object -ComObject WScript.Shell
+    $shortcut = $shell.CreateShortcut("$([Environment]::GetFolderPath("Desktop"))\cmder.lnk")
+    $shortcut.TargetPath = "$toolsPath\cmder\Cmder.exe"
+    $arg1 = "/x"
+    $arg2 = """-loadcfgfile $([Environment]::GetFolderPath("MyDocuments"))\cmder\ConEmu.xml"""
+    $shortcut.Arguments = $arg1 + " " + $arg2 
+    $shortcut.Save()
 }
 #endregion
 
