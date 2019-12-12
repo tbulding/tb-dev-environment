@@ -11,7 +11,7 @@ if ((Test-Path 'c:\tools\cmder') -eq $True) {
     Write-Output 'cmder is already installed -Skipping'
 }
 else {
-    $url = 'https://github.com/cmderdev/cmder/releases/download/v1.3.13/cmder.zip'
+    $url = 'https://github.com/cmderdev/cmder/releases/download/v1.3.13/cmder_mini.zip'
     $output = 'c:\temp\cmder.zip'
     $wc = New-Object System.Net.WebClient
     $wc.DownloadFile($url, $output)
@@ -56,6 +56,11 @@ else {
 
 #endregion
 
+#Run the linux setup scripts
 & wsl sh  /mnt/c/temp/dev-environment/linuxconfig.sh
+#Restart the WSL service to ensure the wsl.conf if loaded at next startup
+Write-Output "Restarting WSL Service"
+& wslconfig /terminate 'Ubuntu-18.04'
+Restart-Service LxssManager
 
 
