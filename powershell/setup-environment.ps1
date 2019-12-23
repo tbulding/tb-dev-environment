@@ -5,7 +5,20 @@ param (
     $sourcepath
 )
 $toolsPath = 'C:\tools'
-#region *************** Download and Install cmder **************************
+
+Write-Host '
+__/\\\______________/\\\_____/\\\\\\\\\\\____/\\\______________________________/\\\\\\\\\____________________________________/\\\\\____________________        
+ _\/\\\_____________\/\\\___/\\\/////////\\\_\/\\\___________________________/\\\////////___________________________________/\\\///_____________________       
+  _\/\\\_____________\/\\\__\//\\\______\///__\/\\\_________________________/\\\/___________________________________________/\\\_______/\\\___/\\\\\\\\__      
+   _\//\\\____/\\\____/\\\____\////\\\_________\/\\\________________________/\\\_________________/\\\\\_____/\\/\\\\\\____/\\\\\\\\\___\///___/\\\////\\\_     
+    __\//\\\__/\\\\\__/\\\________\////\\\______\/\\\_______________________\/\\\_______________/\\\///\\\__\/\\\////\\\__\////\\\//_____/\\\_\//\\\\\\\\\_    
+     ___\//\\\/\\\/\\\/\\\____________\////\\\___\/\\\_______________________\//\\\_____________/\\\__\//\\\_\/\\\__\//\\\____\/\\\______\/\\\__\///////\\\_   
+      ____\//\\\\\\//\\\\\______/\\\______\//\\\__\/\\\________________________\///\\\__________\//\\\__/\\\__\/\\\___\/\\\____\/\\\______\/\\\__/\\_____\\\_  
+       _____\//\\\__\//\\\______\///\\\\\\\\\\\/___\/\\\\\\\\\\\\\\\______________\////\\\\\\\\\__\///\\\\\/___\/\\\___\/\\\____\/\\\______\/\\\_\//\\\\\\\\__ 
+        ______\///____\///_________\///////////_____\///////////////__________________\/////////_____\/////_____\///____\///_____\///_______\///___\////////___
+'
+
+#region *************** Download and Install cmder ***************************
 #Check to see if cmder is already installed
 if ((Test-Path 'c:\tools\cmder') -eq $True) {
     Write-Output 'cmder is already installed -Skipping'
@@ -28,8 +41,7 @@ else {
     $shortcut.Save()
 }
 #endregion
-
-#region WSL
+#region *************** Configure WSL ****************************************
 # Enable WSL
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux
 # Download and Install Ubuntu
@@ -46,9 +58,8 @@ Start-Sleep -Seconds 30
 Copy-Item "$sourcepath\wsl\wsl.conf" -Destination "$($wslpath.BasePath)\rootfs\etc"
 # New-Item -Path "$($wslpath.BasePath)\rootfs\" -Name "c" -ItemType "directory"
 #endregion
-
-#region Windows Config
-#Font
+#region *************** Windows Config ***************************************
+# Configure patched Font
 $fontName = 'DejaVu Sans Mono Nerd Font Complete.ttf'
 If (((Test-Path "c:\windows\fonts\$($fontName)") -eq $True) -or ((Test-Path "$($env:LOCALAPPDATA)\Microsoft\windows\fonts\$($fontName)") -eq $True)) {
     Write-Output "The font $fontName is already installed - Skipping"
@@ -59,14 +70,15 @@ else {
     $Fonts = $sa.NameSpace(0x14)
     $Fonts.CopyHere("c:\temp\$fontName")
 }
-
 #endregion
-
+#region *************** Launch Linux Config **********************************
 #Run the linux setup scripts
-& wsl sh  /mnt/c/temp/dev-environment/linuxconfig.sh
-#Restart the WSL service to ensure the wsl.conf if loaded at next startup
+& wsl wget -O - https://raw.githubusercontent.com/tbulding/tb-dev-environment/master/linuxconfig.sh | sh
+#Restart the WSL service to ensure the wsl.conf is loaded at next startup
 Write-Output "Restarting WSL Service"
 & wslconfig /terminate 'Ubuntu-18.04'
 Restart-Service LxssManager
+#endregion
+
 
 

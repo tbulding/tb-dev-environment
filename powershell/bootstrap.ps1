@@ -1,5 +1,6 @@
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
+
 #region Package Providers
 Write-Output 'Installing Nuget'
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
