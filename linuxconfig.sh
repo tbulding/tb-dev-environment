@@ -123,7 +123,7 @@ ReposInstaller() {
     sudo dpkg --configure -a || true;
     sudo -k sed -i -r 's"enabled=1"enabled=0"' /etc/default/apport
     if ! command -v wget >/dev/null; then
-        InstallThisQuietly wget;
+        InstallThisQuietly wget
     fi
 
     if ! command -v curl > /dev/null; then
