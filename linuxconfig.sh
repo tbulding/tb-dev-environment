@@ -134,6 +134,10 @@ ReposInstaller() {
         InstallThisQuietly gdebi
     fi
 
+    if ! command -v unzip > /dev/null; then
+        InstallThisQuietly unzip
+    fi
+
     cecho "${green}" "Adding APT Repositories."
     Version=$(lsb_release -cs)
 
@@ -161,7 +165,7 @@ PythonInstaller() {
 AWSInstaller(){
     cecho "${cyan}" "Installing AWS CLI..."
     curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    gunzip awscliv2.zip
+    unzip awscliv2.zip
     sudo ./aws/install
 }
 
@@ -312,7 +316,7 @@ GitSetUp() {
         read -r response
         if [[ "${response}" = "yes" ]]; then
             wget https://github.com/mmphego/git-hooks/archive/master.zip -P ~/Documents && \
-            gunzip ~/Documents/master.zip -d ~/Documents
+            unzip ~/Documents/master.zip -d ~/Documents
             [ -f ~/Documents/git-hooks-master/setup_hooks.sh ] && \
             sudo ~/Documents/git-hooks-master/setup_hooks.sh install_hooks
         fi
@@ -378,7 +382,7 @@ main() {
 ########################################
 ########### THE SETUP ##################
 ########################################
-#ReposInstaller
+ReposInstaller
 main
 installDotfiles
 #Cleanup
