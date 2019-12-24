@@ -329,7 +329,7 @@ installDotfiles() {
     ################################################################################################
     #rsync -var /mnt/c/temp/dev-environment/.dotfiles/ "${HOME}"
     sudo wget -P "${HOME}" "https://github.com/tbulding/tb-dev-environment/tree/master/.dotfiles/"
-    sudo wget -O /etc "https://raw.githubusercontent.com/tbulding/tb-dev-environment/master/wsl/wsl.conf"
+    sudo wget -O /etc/wsl.conf "https://raw.githubusercontent.com/tbulding/tb-dev-environment/master/wsl/wsl.conf"
     #sudo rsync -var /mnt/c/temp/dev-environment/wsl/wsl.conf "/etc"
     sudo mkdir -p /c
 }
