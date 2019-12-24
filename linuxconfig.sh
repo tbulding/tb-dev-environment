@@ -325,7 +325,7 @@ installDotfiles() {
     ################################################################################################
     rsync -var /mnt/c/temp/dev-environment/.dotfiles/ "${HOME}"
     sudo rsync -var /mnt/c/temp/dev-environment/wsl/wsl.conf "/etc"
-    sudo mkdir /c
+    sudo mkdir -p /c
 }
 
 Cleanup() {

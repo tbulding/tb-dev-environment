@@ -75,7 +75,7 @@ else {
 #endregion
 #region *************** Launch Linux Config **********************************
 #Run the linux setup scripts
-& wsl curl https://raw.githubusercontent.com/tbulding/tb-dev-environment/master/linuxconfig.sh | sh
+& bash -c "curl https://raw.githubusercontent.com/tbulding/tb-dev-environment/master/linuxconfig.sh -o linuxconfig.sh && chmod +x linuxconfig.sh && sudo sh ./linuxconfig.sh"
 #Restart the WSL service to ensure the wsl.conf is loaded at next startup
 Write-Output "Restarting WSL Service"
 & wslconfig /terminate 'Ubuntu-18.04'
