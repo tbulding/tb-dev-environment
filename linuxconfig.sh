@@ -9,9 +9,8 @@ set -e pipefail
 #  increase the number of open files allowed
 ulimit -n 65535 || true
 # Check if the script is running under Ubuntu 16.04 or Ubuntu 18.04
-if [ "$(lsb_release -c -s)" != "bionic" ] && [ "$(lsb_release -c -s)" != "xenial" ]; then
-    >&2 echo "This script is made for Ubuntu 16.04 or Ubuntu 18.04!"
-    >&2 echo "You are running $(lsb_release -c -s)"
+if [ "$(lsb_release -c -s)" != "bionic" ]; then
+    >&2 echo "This script is made for Ubuntu Ubuntu 18.04!"
     exit 1
 fi
 
