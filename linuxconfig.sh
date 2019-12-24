@@ -125,7 +125,7 @@ ReposInstaller() {
     if ! command -v wget >/dev/null; then
         InstallThisQuietly wget
     fi
-    
+
     if ! command -v curl > /dev/null; then
         InstallThisQuietly curl
     fi
