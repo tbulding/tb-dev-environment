@@ -9,10 +9,10 @@ set -e pipefail
 #  increase the number of open files allowed
 ulimit -n 65535 || true
 # Check if the script is running under Ubuntu 16.04 or Ubuntu 18.04
-if [ "$(lsb_release -c -s)" != "bionic" ]; then
-    >&2 echo "This script is made for Ubuntu Ubuntu 18.04!"
-    exit 1
-fi
+# if [ "$(lsb_release -c -s)" != "bionic" ]; then
+#     >&2 echo "This script is made for Ubuntu Ubuntu 18.04!"
+#     exit 1
+# fi
 
 # Setting up some vars
 export BIN_DIR="/usr/local/bin/"
@@ -71,26 +71,6 @@ read -r -p 'Enter your email address: ' USEREMAIL
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-
-retry_cmd() {
-    # Retries a command on failure.
-    # $1 - the max number of attempts
-    # $2... - the command to run
-    local -r -i max_attempts="$1"; shift
-    local -r cmd="$@"
-    local -i attempt_num=1
-
-    until $cmd
-    do
-        if (( attempt_num == max_attempts )); then
-            echo "Attempt $attempt_num failed and there are no more attempts left!"
-            return 1
-        else
-            echo "Attempt $attempt_num failed! Trying again in $attempt_num seconds..."
-            sleep $(( attempt_num++ ))
-        fi
-    done
-}
 
 Recv_GPG_Keys() {
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys "$1"
@@ -174,8 +154,6 @@ ZSHInstaller(){
     rm -r -f ~/.oh-my-zsh
     cecho "${cyan}" "Installing ZSH..."
     InstallThisQuietly zsh
-    cecho "${cyan}" "Installing curl..."
-	InstallThisQuietly curl
     cecho "${cyan}" "Installing fontconfig..."
 	InstallThisQuietly fontconfig
     cecho "${cyan}" "Installing Powerline Symbols..."
